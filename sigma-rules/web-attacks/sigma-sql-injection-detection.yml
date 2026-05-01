@@ -1,0 +1,50 @@
+title: SQL Injection Attempt in Web Application Logs
+id: sbari-wa-001
+status: stable
+description: |
+  Detects common SQL injection patterns in web server and WAF logs. Covers
+  UNION-based, error-based, blind, and time-based injection techniques.
+  Developed from real-world WAF tuning that blocked 80% of malicious traffic
+  at enterprise banking web applications.
+author: Shakil Md. Rezwanul Bari
+date: 2025/03/01
+modified: 2025/07/01
+references:
+  - https://attack.mitre.org/techniques/T1190/
+  - https://owasp.org/www-community/attacks/SQL_Injection
+tags:
+  - attack.initial_access
+  - attack.t1190
+logsource:
+  category: webserver
+detection:
+  selection_uri:
+    cs-uri-query|contains:
+      - "' OR 1=1"
+      - "UNION SELECT"
+      - "UNION ALL SELECT"
+      - "1=1--"
+      - "' OR ''='"
+      - "WAITFOR DELAY"
+      - "BENCHMARK("
+      - "SLEEP("
+      - "ORDER BY 1--"
+      - "HAVING 1=1"
+      - "GROUP BY"
+      - "INSERT INTO"
+      - "xp_cmdshell"
+      - "EXEC("
+      - "EXECUTE("
+      - "information_schema"
+      - "sys.tables"
+  condition: selection_uri
+fields:
+  - c-ip
+  - cs-uri-stem
+  - cs-uri-query
+  - sc-status
+  - cs-User-Agent
+falsepositives:
+  - Legitimate queries containing SQL keywords in parameter values
+  - Security scanning tools during authorized penetration testing
+level: high

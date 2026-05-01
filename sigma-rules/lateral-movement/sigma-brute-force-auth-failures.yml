@@ -1,0 +1,45 @@
+title: Brute Force Authentication - Multiple Failed Login Attempts
+id: sbari-ca-001
+status: stable
+description: |
+  Detects potential brute force attacks by identifying multiple failed authentication
+  attempts from a single source within a short time window. This rule supports
+  detection across Active Directory, cloud identity providers, and VPN gateways.
+  Developed through 17+ years of SOC operations across financial services and
+  cloud technology environments.
+author: Shakil Md. Rezwanul Bari
+date: 2025/01/15
+modified: 2025/07/01
+references:
+  - https://attack.mitre.org/techniques/T1110/
+  - https://attack.mitre.org/techniques/T1110/001/
+  - https://d3fend.mitre.org/technique/d3f:AuthenticationEventThresholding/
+tags:
+  - attack.credential_access
+  - attack.t1110
+  - attack.t1110.001
+  - d3fend.d3f:AuthenticationEventThresholding
+logsource:
+  category: authentication
+  product: windows
+detection:
+  selection:
+    EventID:
+      - 4625  # Failed logon
+      - 4771  # Kerberos pre-authentication failed
+  filter_service_accounts:
+    TargetUserName|endswith:
+      - '$'  # Exclude computer accounts
+  condition: selection and not filter_service_accounts | count(TargetUserName) by SourceIP > 10
+  timeframe: 5m
+fields:
+  - TargetUserName
+  - SourceIP
+  - LogonType
+  - WorkstationName
+  - FailureReason
+falsepositives:
+  - Legitimate password resets during onboarding
+  - Automated service account authentication retries
+  - Misconfigured applications with cached credentials
+level: high

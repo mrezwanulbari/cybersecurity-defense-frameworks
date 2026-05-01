@@ -1,0 +1,41 @@
+title: Potential DNS Tunneling - Anomalous DNS Query Patterns
+id: sbari-ex-001
+status: stable
+description: |
+  Detects potential DNS tunneling by identifying unusually long DNS queries,
+  high-frequency DNS requests to a single domain, or DNS queries with high
+  entropy subdomains — indicators of data exfiltration via DNS protocol.
+author: Shakil Md. Rezwanul Bari
+date: 2025/03/15
+modified: 2025/07/01
+references:
+  - https://attack.mitre.org/techniques/T1048/
+  - https://attack.mitre.org/techniques/T1071/004/
+tags:
+  - attack.exfiltration
+  - attack.t1048
+  - attack.command_and_control
+  - attack.t1071.004
+logsource:
+  category: dns
+detection:
+  selection_long_query:
+    query|re: '^.{60,}'
+  selection_txt_record:
+    record_type: 'TXT'
+    query|contains:
+      - '.duckdns.org'
+      - '.no-ip.com'
+      - '.dynu.com'
+  condition: selection_long_query or selection_txt_record
+fields:
+  - src_ip
+  - query
+  - record_type
+  - answer
+  - query_length
+falsepositives:
+  - CDN services with long domain names
+  - Legitimate TXT record lookups (SPF, DKIM, DMARC)
+  - Cloud service API endpoints
+level: medium

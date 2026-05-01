@@ -1,0 +1,57 @@
+title: Suspicious Scheduled Task Creation for Persistence
+id: sbari-pe-001
+status: stable
+description: |
+  Detects creation of scheduled tasks that may indicate persistence mechanisms
+  established by threat actors. Monitors for tasks created via schtasks.exe,
+  PowerShell, or WMI with suspicious characteristics such as encoded commands,
+  remote execution, or execution from temp directories.
+author: Shakil Md. Rezwanul Bari
+date: 2025/04/01
+modified: 2025/07/01
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+  - https://d3fend.mitre.org/technique/d3f:ScheduledJobAnalysis/
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.t1053.005
+  - d3fend.d3f:ScheduledJobAnalysis
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_schtasks:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains:
+      - '/create'
+      - '-create'
+  filter_suspicious_paths:
+    CommandLine|contains:
+      - '\Temp\'
+      - '\tmp\'
+      - '\AppData\Local\'
+      - '\Downloads\'
+      - 'powershell'
+      - 'cmd.exe /c'
+      - 'mshta'
+      - 'wscript'
+      - 'cscript'
+      - 'certutil'
+      - 'bitsadmin'
+  selection_encoded:
+    CommandLine|contains:
+      - '-encodedcommand'
+      - '-enc '
+      - 'FromBase64String'
+  condition: (selection_schtasks and filter_suspicious_paths) or selection_encoded
+fields:
+  - User
+  - CommandLine
+  - ParentImage
+  - ParentCommandLine
+falsepositives:
+  - Legitimate software installation creating scheduled tasks
+  - System administration scripts
+  - Windows Update scheduled tasks
+level: high

@@ -1,0 +1,45 @@
+title: Suspicious PsExec/SMB Lateral Movement Detection
+id: sbari-lm-001
+status: stable
+description: |
+  Detects potential lateral movement via PsExec or similar remote execution tools
+  by monitoring for characteristic service installations and named pipe creation
+  on remote systems. Applicable across enterprise environments regardless of sector.
+author: Shakil Md. Rezwanul Bari
+date: 2025/02/10
+modified: 2025/07/01
+references:
+  - https://attack.mitre.org/techniques/T1570/
+  - https://attack.mitre.org/techniques/T1021/002/
+tags:
+  - attack.lateral_movement
+  - attack.t1570
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_psexec:
+    Image|endswith:
+      - '\PsExec.exe'
+      - '\PsExec64.exe'
+    ParentImage|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+  selection_service:
+    EventID: 7045
+    ServiceName|contains:
+      - 'PSEXESVC'
+      - 'csexec'
+      - 'paexec'
+  condition: selection_psexec or selection_service
+fields:
+  - User
+  - SourceIP
+  - DestinationHostname
+  - CommandLine
+  - ParentCommandLine
+falsepositives:
+  - Authorized remote administration by IT teams
+  - Software deployment tools using PsExec legitimately
+level: high

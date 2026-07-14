@@ -79,11 +79,11 @@ These resources were developed through 17+ years of hands-on cybersecurity opera
 - **International Development** — IDRA (World Bank project)
 - **Education** — Daffodil Institute of IT
 
-Key results achieved using these methodologies:
-- 60% reduction in incident response time
-- 45% reduction in MTTD/MTTR
-- 40% reduction in false positives
-- 80% improvement in security posture (PCI-DSS v4.0.1)
+Illustrative outcomes reported when applying these methodologies in past engagements (self-assessed estimates, not independently audited figures — treat as directional rather than precise):
+- Meaningful reduction in incident response time
+- Improved MTTD/MTTR through better detection tuning
+- Reduced false-positive volume via refined correlation logic
+- Stronger security posture alignment with PCI-DSS v4.0.1 requirements
 
 ## Contributing
 
@@ -102,3 +102,4 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) for de
 - LinkedIn: [linkedin.com/in/rezwanulbari](https://www.linkedin.com/in/rezwanulbari)
 - Email: rezwanbari@gmail.com
 - Certifications: CISM, CISA, CySA+, Security+, AWS SA, Azure SC-100, AZ-500, CEH, Splunk ES Admin, ISO 27001 LA (18 total)
+
